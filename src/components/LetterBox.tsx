@@ -1,15 +1,22 @@
 'use client';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 
 interface LetterBoxProps {
   maxLength: number;
   onLetterChange: (letter: string) => void;
   onBackspace: () => void;
   inputRef?: (ref: HTMLInputElement | null) => void;
+  backgroundColor?: string;
 }
 
-const LetterBox: React.FC<LetterBoxProps> = ({ maxLength, onLetterChange, onBackspace, inputRef }) => {
-  const [letter, setLetter] = useState<string>('');
+const LetterBox: React.FC<LetterBoxProps> = ({
+  maxLength,
+  onLetterChange,
+  onBackspace,
+  inputRef,
+  backgroundColor,
+}) => {
+  const [letter, setLetter] = useState<string>(''); 
   const localRef = useRef<HTMLInputElement>(null);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -17,20 +24,17 @@ const LetterBox: React.FC<LetterBoxProps> = ({ maxLength, onLetterChange, onBack
       onBackspace();
       setLetter('');
     } else if (e.key.length === 1 && /^[A-Za-z]$/.test(e.key)) {
-      const uppercasedLetter = e.key.toUpperCase();
-      setLetter(uppercasedLetter);
-      onLetterChange(uppercasedLetter);
+      const uppercaseLetter = e.key.toUpperCase();
+      setLetter(uppercaseLetter);
+      onLetterChange(uppercaseLetter);
     }
   };
 
-  useEffect(() => {
-    if (localRef.current) {
-      localRef.current.focus();
-    }
-  }, []);
-
   return (
-    <div className="w-16 h-16 flex justify-center items-center border-2 border-gray-400 rounded-md">
+    <div
+      className="w-16 h-16 flex justify-center items-center border-2 border-gray-400 rounded-md"
+      style={{ backgroundColor: backgroundColor || 'transparent' }}  // Use backgroundColor directly
+    >
       <input
         ref={(el) => {
           localRef.current = el;
