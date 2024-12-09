@@ -84,7 +84,7 @@ const WordsGrid: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-full gap-2">
+    <div className="flex flex-col items-center justify-center gap-2">
       {guesses.map((row, rowIndex) => (
         <div key={rowIndex} className="flex space-x-2">
           {row.map((letter, colIndex) => (
