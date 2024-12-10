@@ -18,7 +18,7 @@ const VirtualKeyboard: FC<VirtualKeyboardProps> = ({ onKeyPress }) => {
   };
 
   return (
-    <div className="p-10">
+    <div className="py-1/5">
       {keys.map((row, rowIndex) => (
         <div key={rowIndex} className="flex justify-center mb-2">
           {row.map((key) => (

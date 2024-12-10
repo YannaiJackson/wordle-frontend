@@ -68,10 +68,10 @@ const WordsGrid: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center p-10">
+    <div className="flex flex-col items-center justify-center h-full">
       <div className="flex flex-col gap-2">
         {guesses.map((row, rowIndex) => (
-          <div key={rowIndex} className="flex space-x-2 cursor-none">
+          <div key={rowIndex} className="flex space-x-2">
             {row.map((letter, colIndex) => (
               <LetterBox
                 key={colIndex}
