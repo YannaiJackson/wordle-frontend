@@ -7,6 +7,7 @@ interface LetterBoxProps {
   onBackspace: () => void;
   inputRef?: (ref: HTMLInputElement | null) => void;
   backgroundColor?: string;
+  letter: string;  // Accept the letter as a prop
 }
 
 const LetterBox: React.FC<LetterBoxProps> = ({
@@ -15,17 +16,17 @@ const LetterBox: React.FC<LetterBoxProps> = ({
   onBackspace,
   inputRef,
   backgroundColor,
+  letter,  // Destructure the letter prop
 }) => {
-  const [letter, setLetter] = useState<string>(''); 
   const localRef = useRef<HTMLInputElement>(null);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Backspace') {
+      console.log(`Backspace pressed in LetterBox`);
       onBackspace();
-      setLetter('');
     } else if (e.key.length === 1 && /^[A-Za-z]$/.test(e.key)) {
       const uppercaseLetter = e.key.toUpperCase();
-      setLetter(uppercaseLetter);
+      console.log(`Letter pressed: ${uppercaseLetter}`);
       onLetterChange(uppercaseLetter);
     }
   };
@@ -37,15 +38,14 @@ const LetterBox: React.FC<LetterBoxProps> = ({
     >
       <input
         ref={(el) => {
-          localRef.current = el;
           if (inputRef) inputRef(el);
         }}
         type="text"
-        value={letter}
+        value={letter}  // Control the value based on the parent state
         onChange={() => {}}
         onKeyDown={handleKeyDown}
         maxLength={maxLength}
-        className="w-full h-full text-3xl text-center font-bold uppercase bg-transparent outline-none text-white"
+        className="w-full h-full text-3xl text-center font-bold uppercase bg-transparent outline-none text-white caret-transparent"  // Ensure text color is white
       />
     </div>
   );

@@ -1,13 +1,11 @@
 'use client';
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC } from 'react';
 
 interface VirtualKeyboardProps {
-  onKeyPress?: (key: string) => void;
-}
+    onKeyPress?: (key: string) => void;  // `key` is a string representing the key pressed
+  }
 
 const VirtualKeyboard: FC<VirtualKeyboardProps> = ({ onKeyPress }) => {
-  const [inputValue, setInputValue] = useState("");
-
   const keys = [
     ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
     ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
@@ -15,35 +13,19 @@ const VirtualKeyboard: FC<VirtualKeyboardProps> = ({ onKeyPress }) => {
   ];
 
   const handleKeyClick = (key: string) => {
-    const updatedValue = inputValue + key;
-    setInputValue(updatedValue);
-    onKeyPress?.(updatedValue);
+    console.log(`Virtual keyboard key pressed: ${key}`);
+    onKeyPress?.(key);
   };
-
-  const handlePhysicalKeyPress = (event: KeyboardEvent) => {
-    const key = event.key.toUpperCase();
-    const allKeys = keys.flat();
-    if (allKeys.includes(key)) {
-      handleKeyClick(key);
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener("keydown", handlePhysicalKeyPress);
-    return () => {
-      window.removeEventListener("keydown", handlePhysicalKeyPress);
-    };
-  }, [inputValue]);
 
   return (
-    <div className="">
+    <div className="p-10">
       {keys.map((row, rowIndex) => (
         <div key={rowIndex} className="flex justify-center mb-2">
           {row.map((key) => (
             <button
               key={key}
               onClick={() => handleKeyClick(key)}
-              className="m-1 px-4 py-2 text-sm font-medium text-white bg-gray-800 border border-white rounded-md hover:bg-gray-300"
+              className="m-1 px-5 py-3 text-sm font-medium text-white bg-gray-800 border border-white rounded-md hover:bg-gray-300 hover:text-black"
             >
               {key}
             </button>
