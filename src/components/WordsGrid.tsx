@@ -56,16 +56,36 @@ const WordsGrid: React.FC = () => {
   };
 
   const handleBackspace = (rowIndex: number, colIndex: number) => {
-    if (colIndex > 0) {
+    const isCurrentCellEmpty = guesses[rowIndex][colIndex] === '';
+  
+    if (isCurrentCellEmpty && colIndex > 0) {
+      // If the current cell is empty and not the first column, delete the previous cell
+      const newGuesses = guesses.map((row, rIndex) =>
+        rIndex === rowIndex
+          ? row.map((col, cIndex) => (cIndex === colIndex - 1 ? '' : col))
+          : row
+      );
+  
+      setGuesses(newGuesses);
+      focusRefs.current[rowIndex][colIndex - 1]?.focus();
+    } else {
+      // Otherwise, clear the current cell and keep focus or move to the previous cell
       const newGuesses = guesses.map((row, rIndex) =>
         rIndex === rowIndex
           ? row.map((col, cIndex) => (cIndex === colIndex ? '' : col))
           : row
       );
+  
       setGuesses(newGuesses);
-      focusRefs.current[rowIndex][colIndex - 1]?.focus();
+      if (colIndex > 0) {
+        focusRefs.current[rowIndex][colIndex - 1]?.focus();
+      } else {
+        focusRefs.current[rowIndex][colIndex]?.focus();
+      }
     }
   };
+  
+  
 
   return (
     <div className="flex flex-col items-center justify-center h-full">
