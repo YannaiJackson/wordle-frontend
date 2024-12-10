@@ -10,7 +10,12 @@ interface ColorsDict {
   [key: string]: string[]; // key is the word, value is an array of colors
 }
 
-const WordsGrid: React.FC = () => {
+// Define props for WordsGrid component
+interface WordsGridProps {
+  word: string; // word is passed as a prop
+}
+
+const WordsGrid: React.FC<WordsGridProps> = ({ word }) => {
   const [guesses, setGuesses] = useState<string[][]>(Array(6).fill(Array(5).fill('')));
   const [colors, setColors] = useState<string[][]>(Array(6).fill(Array(5).fill('')));
   const [currentRow, setCurrentRow] = useState<number>(0);
@@ -19,6 +24,7 @@ const WordsGrid: React.FC = () => {
   // Focus the first input field when the component mounts
   useEffect(() => {
     focusRefs.current[0][0]?.focus();
+    console.log('Component mounted. Focusing on the first input field.');
   }, []);
 
   const handleLetterChange = async (letter: string, rowIndex: number, colIndex: number) => {
@@ -28,38 +34,48 @@ const WordsGrid: React.FC = () => {
       row.map((col, cIndex) => (rIndex === rowIndex && cIndex === colIndex ? letter : col))
     );
     setGuesses(newGuesses);
+    console.log('Updated guesses:', newGuesses);
 
     if (colIndex === 4) {
       const completedRow = newGuesses[rowIndex].join('');
+      console.log(`Row completed: ${completedRow}`);
+
       try {
         const validationResult = await fetchValidation({ guess: completedRow });
-        if (!validationResult) return;
+        if (!validationResult) {
+          console.log('Validation failed for guess:', completedRow);
+          return;
+        }
+        console.log('Validation successful for guess:', completedRow);
 
         setCurrentRow(rowIndex + 1);
         focusRefs.current[rowIndex + 1]?.[0]?.focus();
 
-        const testWord = 'TRUTH';
-        const colorsDict = await fetchColors({ guess: completedRow, word: testWord });
+        const colorsDict = await fetchColors({ guess: completedRow, word: word });
+        console.log(`checking guess: ${completedRow} against word: ${word}`);
         if (colorsDict && colorsDict[completedRow]) {
           const colorsArray = colorsDict[completedRow];
           const newColors = colors.map((row, rIndex) =>
             rIndex === rowIndex ? colorsArray : row
           );
           setColors(newColors);
+          console.log('Updated colors:', newColors);
         }
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Error during validation or color fetching:', error);
       }
     } else {
       focusRefs.current[rowIndex][colIndex + 1]?.focus();
+      console.log(`Focus moved to position [${rowIndex}, ${colIndex + 1}]`);
     }
   };
 
   const handleBackspace = (rowIndex: number, colIndex: number) => {
+    console.log(`Backspace pressed at position [${rowIndex}, ${colIndex}]`);
+
     const isCurrentCellEmpty = guesses[rowIndex][colIndex] === '';
   
     if (isCurrentCellEmpty && colIndex > 0) {
-      // If the current cell is empty and not the first column, delete the previous cell
       const newGuesses = guesses.map((row, rIndex) =>
         rIndex === rowIndex
           ? row.map((col, cIndex) => (cIndex === colIndex - 1 ? '' : col))
@@ -68,8 +84,8 @@ const WordsGrid: React.FC = () => {
   
       setGuesses(newGuesses);
       focusRefs.current[rowIndex][colIndex - 1]?.focus();
+      console.log('Moved focus to the previous cell');
     } else {
-      // Otherwise, clear the current cell and keep focus or move to the previous cell
       const newGuesses = guesses.map((row, rIndex) =>
         rIndex === rowIndex
           ? row.map((col, cIndex) => (cIndex === colIndex ? '' : col))
@@ -82,10 +98,9 @@ const WordsGrid: React.FC = () => {
       } else {
         focusRefs.current[rowIndex][colIndex]?.focus();
       }
+      console.log('Cleared current cell and moved focus accordingly');
     }
   };
-  
-  
 
   return (
     <div className="flex flex-col items-center justify-center h-full">
@@ -108,18 +123,18 @@ const WordsGrid: React.FC = () => {
       </div>
       <VirtualKeyboard
         onKeyPress={(key: string) => {
-            if (key === '⌫') {
-            // Handle backspace: Look for the last filled letter in the current row
-            const lastFilledIndex = guesses[currentRow].findIndex(letter => letter === ''); // Find the first empty cell
+          console.log(`Key pressed: ${key}`);
+
+          if (key === '⌫') {
+            const lastFilledIndex = guesses[currentRow].findIndex(letter => letter === '');
             const colIndex = lastFilledIndex === -1 ? guesses[currentRow].length - 1 : lastFilledIndex - 1;
             handleBackspace(currentRow, colIndex);
-            } else {
-            // Handle regular key press: Place letter in the first empty cell
+          } else {
             const firstEmptyIndex = guesses[currentRow].findIndex(letter => letter === '');
             if (firstEmptyIndex !== -1) {
-                handleLetterChange(key, currentRow, firstEmptyIndex);
+              handleLetterChange(key, currentRow, firstEmptyIndex);
             }
-            }
+          }
         }}
       />
     </div>

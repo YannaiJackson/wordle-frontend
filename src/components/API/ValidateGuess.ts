@@ -1,5 +1,4 @@
 type ValidationResponse = {
-  // Replace this with the actual response structure from your API
   isValid: boolean;
   message?: string;
 };
