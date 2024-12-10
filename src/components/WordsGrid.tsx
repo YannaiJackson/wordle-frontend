@@ -107,9 +107,20 @@ const WordsGrid: React.FC = () => {
         ))}
       </div>
       <VirtualKeyboard
-        onKeyPress={(key: string) =>
-          handleLetterChange(key, currentRow, guesses[currentRow].indexOf(''))
-        }
+        onKeyPress={(key: string) => {
+            if (key === '⌫') {
+            // Handle backspace: Look for the last filled letter in the current row
+            const lastFilledIndex = guesses[currentRow].findIndex(letter => letter === ''); // Find the first empty cell
+            const colIndex = lastFilledIndex === -1 ? guesses[currentRow].length - 1 : lastFilledIndex - 1;
+            handleBackspace(currentRow, colIndex);
+            } else {
+            // Handle regular key press: Place letter in the first empty cell
+            const firstEmptyIndex = guesses[currentRow].findIndex(letter => letter === '');
+            if (firstEmptyIndex !== -1) {
+                handleLetterChange(key, currentRow, firstEmptyIndex);
+            }
+            }
+        }}
       />
     </div>
   );
