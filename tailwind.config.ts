@@ -9,10 +9,7 @@ export default {
   theme: {
     extend: {
       spacing: {
-        '1/5': '3%',
-        '1/4': '25%',
-        '3/4': '75%',
-        full: '100%',
+        '0.03': '3%',
       },
       colors: {
         background: "var(--background)",
