@@ -1,3 +1,6 @@
+import config from '../../../config';
+
+
 /**
  * This file contains an asynchronous function to fetch the color of each letter in a guess against a Wordle-like API.
  */
@@ -22,7 +25,16 @@ interface FetchColorsResponse {
  */
 export async function fetchColors({ word, guess }: FetchColorsParams): Promise<FetchColorsResponse | null> {
   try {
-    const response = await fetch('http://127.0.0.1:8000/en/check-guess', {
+    // Get the URL from config file
+    const apiUrl = config.API_BASE_URL + config.URL_WORD_CHECKER_ENDPOINT;
+    console.log('Word checking endpoint:', apiUrl);
+
+    if (!apiUrl) {
+      throw new Error('API URL is not defined in config file.');
+    }
+
+    const url = new URL(apiUrl);
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

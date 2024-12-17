@@ -1,3 +1,6 @@
+import config from '../../../config';
+
+
 /**
  * This file contains an asynchronous function to fetch a random word from a Wordle-like API.
  */
@@ -9,7 +12,16 @@
  */
 export async function fetchWord(): Promise<string> {
   try {
-    const response = await fetch('http://127.0.0.1:8000/en/random-word', {
+    // Get the URL from config file
+    const apiUrl = config.API_BASE_URL + config.URL_WORD_GENERATOR_ENDPOINT;
+    console.log('Word generation endpoint:', apiUrl);
+
+    if (!apiUrl) {
+      throw new Error('API URL is not defined in config file.');
+    }
+
+    const url = new URL(apiUrl);
+    const response = await fetch(url, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
     });

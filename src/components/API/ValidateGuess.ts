@@ -1,3 +1,6 @@
+import config from '../../../config';
+
+
 /**
  * This file contains an asynchronous function to validate a guess against a Wordle-like API.
  */
@@ -21,7 +24,15 @@ interface FetchValidationParams {
  */
 export async function fetchValidation({ guess }: FetchValidationParams): Promise<ValidationResponse | null> {
   try {
-    const url = new URL('http://127.0.0.1:8000/en/validate-guess');
+    // Get the URL from config file
+    const apiUrl = config.API_BASE_URL + config.URL_WORD_VALIDATOR_ENDPOINT;
+    console.log('Word validation endpoint:', apiUrl);
+
+    if (!apiUrl) {
+      throw new Error('API URL is not defined in config file.');
+    }
+
+    const url = new URL(apiUrl);
     url.searchParams.append('guess', guess);
 
     const response = await fetch(url.toString(), {
