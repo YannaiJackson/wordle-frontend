@@ -67,7 +67,7 @@ export default function Home() {
   return (
     <div className="bg-gray-900 h-screen w-screen">
       {showWinPopup && (
-        <WinPopup onClose={() => setShowWinPopup(false)} onRestart={handleRestart} />
+        <WinPopup onRestart={handleRestart} />
       )}
       {word && <WordsGrid word={word} setShowWinPopup={setShowWinPopup} />}
     </div>
