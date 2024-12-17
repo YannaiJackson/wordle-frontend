@@ -1,0 +1,23 @@
+# Ignore node_modules folder to avoid copying unnecessary files
+node_modules
+
+# Ignore build and cache files
+.next
+out
+
+# Ignore logs
+*.log
+
+# Ignore local environment files
+.env
+
+# Ignore Dockerfile and dockerignore itself
+Dockerfile
+.dockerignore
+
+# Ignore Tailwind config files (optional)
+tailwind.config.js
+postcss.config.js
+
+# Ignore other unnecessary files
+*.md
