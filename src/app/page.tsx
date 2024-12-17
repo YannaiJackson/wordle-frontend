@@ -45,11 +45,13 @@ export default function Home() {
   // Function to handle game restarts
   const handleRestart = () => {
     setShowWinPopup(false);
+    console.log('Game restarting...');
     getNewWord(); // Restart game by fetching a new word
   };
 
   // Fetch a new word when the component mounts
   useEffect(() => {
+    console.log('Component mounted. Starting game...');
     getNewWord();
   }, []);
 

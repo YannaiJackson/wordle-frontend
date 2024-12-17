@@ -3,7 +3,7 @@
  */
 
 'use client';
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 
 // Define props for LetterBox component
 interface LetterBoxProps {
@@ -28,11 +28,11 @@ const LetterBox: React.FC<LetterBoxProps> = ({
   // Function to handle key down events
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Backspace') {
-      console.log(`Backspace pressed in LetterBox`);
+      console.log(`Physical keyboard key pressed: ⌫`);
       onBackspace();
     } else if (e.key.length === 1 && /^[A-Za-z]$/.test(e.key)) {
       const uppercaseLetter = e.key.toUpperCase();
-      console.log(`Letter pressed: ${uppercaseLetter}`);
+      console.log(`Physical keyboard key pressed: ${uppercaseLetter}`);
       onLetterChange(uppercaseLetter);
     }
   };

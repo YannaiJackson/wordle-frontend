@@ -52,7 +52,7 @@ const WordsGrid: React.FC<WordsGridProps> = ({ word, setShowWinPopup }) => {
     colIndex: number
   ) => {
     console.log(
-      `Letter changed: ${letter} at position [${rowIndex}, ${colIndex}]`
+      `Letter added to position [${rowIndex}, ${colIndex}]`
     );
 
     const newGuesses = guesses.map((row, rIndex) =>
@@ -61,7 +61,7 @@ const WordsGrid: React.FC<WordsGridProps> = ({ word, setShowWinPopup }) => {
       )
     );
     setGuesses(newGuesses);
-    console.log("Updated guesses:", newGuesses);
+    console.log("Updated grid:", newGuesses);
 
     if (colIndex === 4) {
       const completedRow = newGuesses[rowIndex].join("");
@@ -89,9 +89,11 @@ const WordsGrid: React.FC<WordsGridProps> = ({ word, setShowWinPopup }) => {
             rIndex === rowIndex ? colorsArray : row
           );
           setColors(newColors);
+          console.log(`${completedRow} letter's colors are: ${colorsArray}`)
 
           if (checkWin(rowIndex, newColors)) {
             setShowWinPopup(true);
+            console.log(`Player's guess was correct, plyer won.`);
             return;
           }
 

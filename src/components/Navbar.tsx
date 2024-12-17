@@ -13,11 +13,12 @@ const Navbar = () => {
   // Function to handle language change
   const handleChangeLanguage = () => {
     setIsEnglish(!isEnglish);
-    console.log(`Changed language to ${isEnglish ? 'HE' : 'EN'}`); // Log the correct toggled language
+    console.log(`Changed language to ${isEnglish ? 'HE' : 'EN'}`);
   };
 
   // Function to handle new game button click
   const handleNewGame = () => {
+    console.log("Refreshing page...");
     window.location.reload();
   };
 
