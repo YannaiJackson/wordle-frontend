@@ -1,9 +1,10 @@
-'use client';
-import React, { useState, useRef, useEffect } from 'react';
-import LetterBox from '@/components/LetterBox';
-import { fetchColors } from '@/components/API/ColorLetters';
-import { fetchValidation } from '@/components/API/ValidateGuess';
-import VirtualKeyboard from '@/components/VirtualKeyboard';
+"use client";
+import React, { useState, useRef, useEffect } from "react";
+import LetterBox from "@/components/LetterBox";
+import { fetchColors } from "@/components/API/ColorLetters";
+import { fetchValidation } from "@/components/API/ValidateGuess";
+import VirtualKeyboard from "@/components/VirtualKeyboard";
+import checkWin from "@/components/utils";
 
 // Define the expected structure of the colorsDict
 interface ColorsDict {
@@ -13,45 +14,65 @@ interface ColorsDict {
 // Define props for WordsGrid component
 interface WordsGridProps {
   word: string; // word is passed as a prop
+  setShowWinPopup: (show: boolean) => void; // function to toggle win popup
 }
 
-const WordsGrid: React.FC<WordsGridProps> = ({ word }) => {
-  const [guesses, setGuesses] = useState<string[][]>(Array(6).fill(Array(5).fill('')));
-  const [colors, setColors] = useState<string[][]>(Array(6).fill(Array(5).fill('')));
+const WordsGrid: React.FC<WordsGridProps> = ({ word, setShowWinPopup }) => {
+  const [guesses, setGuesses] = useState<string[][]>(
+    Array(6).fill(Array(5).fill(""))
+  );
+  const [colors, setColors] = useState<string[][]>(
+    Array(6).fill(Array(5).fill(""))
+  );
   const [currentRow, setCurrentRow] = useState<number>(0);
-  const focusRefs = useRef<(HTMLInputElement | null)[][]>(Array.from({ length: 6 }, () => Array(5).fill(null)));
+  const focusRefs = useRef<(HTMLInputElement | null)[][]>(
+    Array.from({ length: 6 }, () => Array(5).fill(null))
+  );
 
-  // Focus the first input field when the component mounts
   useEffect(() => {
     focusRefs.current[0][0]?.focus();
-    console.log('Component mounted. Focusing on the first input field.');
   }, []);
 
-  const handleLetterChange = async (letter: string, rowIndex: number, colIndex: number) => {
-    console.log(`Letter changed: ${letter} at position [${rowIndex}, ${colIndex}]`);
+  const moveFocus = (row: number, col: number) => {
+    focusRefs.current[row]?.[col]?.focus();
+  };
+
+  const handleLetterChange = async (
+    letter: string,
+    rowIndex: number,
+    colIndex: number
+  ) => {
+    console.log(
+      `Letter changed: ${letter} at position [${rowIndex}, ${colIndex}]`
+    );
 
     const newGuesses = guesses.map((row, rIndex) =>
-      row.map((col, cIndex) => (rIndex === rowIndex && cIndex === colIndex ? letter : col))
+      row.map((col, cIndex) =>
+        rIndex === rowIndex && cIndex === colIndex ? letter : col
+      )
     );
     setGuesses(newGuesses);
-    console.log('Updated guesses:', newGuesses);
+    console.log("Updated guesses:", newGuesses);
 
     if (colIndex === 4) {
-      const completedRow = newGuesses[rowIndex].join('');
+      const completedRow = newGuesses[rowIndex].join("");
       console.log(`Row completed: ${completedRow}`);
 
       try {
         const validationResult = await fetchValidation({ guess: completedRow });
         if (!validationResult) {
-          console.log('Validation failed for guess:', completedRow);
+          console.log("Validation failed for guess:", completedRow);
           return;
         }
-        console.log('Validation successful for guess:', completedRow);
+        console.log("Validation successful for guess:", completedRow);
 
         setCurrentRow(rowIndex + 1);
         focusRefs.current[rowIndex + 1]?.[0]?.focus();
 
-        const colorsDict = await fetchColors({ guess: completedRow, word: word });
+        const colorsDict = await fetchColors({
+          guess: completedRow,
+          word: word,
+        });
         console.log(`checking guess: ${completedRow} against word: ${word}`);
         if (colorsDict && colorsDict[completedRow]) {
           const colorsArray = colorsDict[completedRow];
@@ -59,46 +80,37 @@ const WordsGrid: React.FC<WordsGridProps> = ({ word }) => {
             rIndex === rowIndex ? colorsArray : row
           );
           setColors(newColors);
-          console.log('Updated colors:', newColors);
+
+          if (checkWin(rowIndex, newColors)) {
+            setShowWinPopup(true);
+            return;
+          }
+
+          setCurrentRow(rowIndex + 1);
+          moveFocus(rowIndex + 1, 0);
         }
       } catch (error) {
-        console.error('Error during validation or color fetching:', error);
+        console.error("Error:", error);
       }
     } else {
-      focusRefs.current[rowIndex][colIndex + 1]?.focus();
-      console.log(`Focus moved to position [${rowIndex}, ${colIndex + 1}]`);
+      moveFocus(rowIndex, colIndex + 1);
     }
   };
 
   const handleBackspace = (rowIndex: number, colIndex: number) => {
-    console.log(`Backspace pressed at position [${rowIndex}, ${colIndex}]`);
+    if (rowIndex < 0 || colIndex < 0) return;
 
-    const isCurrentCellEmpty = guesses[rowIndex][colIndex] === '';
-  
-    if (isCurrentCellEmpty && colIndex > 0) {
-      const newGuesses = guesses.map((row, rIndex) =>
-        rIndex === rowIndex
-          ? row.map((col, cIndex) => (cIndex === colIndex - 1 ? '' : col))
-          : row
-      );
-  
-      setGuesses(newGuesses);
-      focusRefs.current[rowIndex][colIndex - 1]?.focus();
-      console.log('Moved focus to the previous cell');
-    } else {
-      const newGuesses = guesses.map((row, rIndex) =>
-        rIndex === rowIndex
-          ? row.map((col, cIndex) => (cIndex === colIndex ? '' : col))
-          : row
-      );
-  
-      setGuesses(newGuesses);
+    const newGuesses = [...guesses];
+    if (newGuesses[rowIndex][colIndex] === "") {
       if (colIndex > 0) {
-        focusRefs.current[rowIndex][colIndex - 1]?.focus();
-      } else {
-        focusRefs.current[rowIndex][colIndex]?.focus();
+        newGuesses[rowIndex][colIndex - 1] = "";
+        setGuesses(newGuesses);
+        moveFocus(rowIndex, colIndex - 1);
       }
-      console.log('Cleared current cell and moved focus accordingly');
+    } else {
+      newGuesses[rowIndex][colIndex] = "";
+      setGuesses(newGuesses);
+      moveFocus(rowIndex, colIndex);
     }
   };
 
@@ -111,7 +123,9 @@ const WordsGrid: React.FC<WordsGridProps> = ({ word }) => {
               <LetterBox
                 key={colIndex}
                 maxLength={1}
-                onLetterChange={(letter) => handleLetterChange(letter, rowIndex, colIndex)}
+                onLetterChange={(letter) =>
+                  handleLetterChange(letter, rowIndex, colIndex)
+                }
                 onBackspace={() => handleBackspace(rowIndex, colIndex)}
                 inputRef={(el) => (focusRefs.current[rowIndex][colIndex] = el)}
                 backgroundColor={colors[rowIndex][colIndex]}
@@ -123,17 +137,16 @@ const WordsGrid: React.FC<WordsGridProps> = ({ word }) => {
       </div>
       <VirtualKeyboard
         onKeyPress={(key: string) => {
-          console.log(`Key pressed: ${key}`);
-
-          if (key === '⌫') {
-            const lastFilledIndex = guesses[currentRow].findIndex(letter => letter === '');
-            const colIndex = lastFilledIndex === -1 ? guesses[currentRow].length - 1 : lastFilledIndex - 1;
-            handleBackspace(currentRow, colIndex);
+          if (key === "⌫") {
+            const colIndex = guesses[currentRow].findIndex(
+              (letter) => letter === ""
+            );
+            handleBackspace(currentRow, colIndex - 1 >= 0 ? colIndex - 1 : 4);
           } else {
-            const firstEmptyIndex = guesses[currentRow].findIndex(letter => letter === '');
-            if (firstEmptyIndex !== -1) {
-              handleLetterChange(key, currentRow, firstEmptyIndex);
-            }
+            const colIndex = guesses[currentRow].findIndex(
+              (letter) => letter === ""
+            );
+            if (colIndex !== -1) handleLetterChange(key, currentRow, colIndex);
           }
         }}
       />

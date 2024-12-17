@@ -1,51 +1,75 @@
 'use client';
+import React, { useState, useEffect } from 'react';
 import WordsGrid from "@/components/WordsGrid";
 import { fetchWord } from '@/components/API/GenerateWord';
-import React, { useState, useEffect } from 'react';
+import WinPopup from "@/components/WinPopup";
 
 export default function Home() {
-  const [word, setWord] = useState<string | null>(null); // Explicitly define the type as string or null
+  const [word, setWord] = useState<string | null>(null);
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [showWinPopup, setShowWinPopup] = useState(false);
+
+  const getNewWord = async () => {
+    setLoading(true);
+    setError(false);
+    try {
+      console.log('Attempting to fetch a new random word...');
+      const fetchedWord = await fetchWord();
+
+      if (!fetchedWord || typeof fetchedWord !== 'string') {
+        console.error('Fetched word is invalid:', fetchedWord);
+        throw new Error('Invalid word fetched');
+      }
+
+      const uppercaseWord = fetchedWord.toUpperCase();
+      console.log('Successfully fetched word:', uppercaseWord);
+      setWord(uppercaseWord);
+    } catch (error) {
+      console.error('Error generating random word:', error);
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRestart = () => {
+    setShowWinPopup(false);
+    getNewWord(); // Restart game by fetching a new word
+  };
 
   useEffect(() => {
-    const getWord = async () => {
-      console.log('Attempting to fetch random word...');
-      try {
-        const fetchedWord = await fetchWord();
-        
-        // Check if the fetched word is null or invalid
-        if (!fetchedWord || typeof fetchedWord !== 'string') {
-          console.error('Fetched word is invalid:', fetchedWord);
-          throw new Error('Invalid word fetched');
-        }
-
-        const uppercaseWord = fetchedWord.toUpperCase();
-        console.log('Successfully fetched word:', uppercaseWord);
-        setWord(uppercaseWord);
-      } catch (error) {
-        console.error('Error generating random word:', error);
-        setError(true);
-      }
-    };
-
-    getWord();
+    getNewWord();
   }, []);
 
-  if (error || !word) {
-    console.log('Error or word not available, displaying error message.');
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-screen w-screen text-white text-5xl font-bold">
-        An error occurred while generating a random word. Please try again or contact help.
+        Loading...
       </div>
     );
   }
 
-  console.log('Rendering WordsGrid with the word:', word);
-  
+  if (error) {
+    return (
+      <div className="flex flex-col justify-center items-center h-screen w-screen text-white text-2xl">
+        <p>An error occurred while generating a random word.</p>
+        <button
+          onClick={getNewWord}
+          className="mt-4 px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-gray-900 h-screen w-screen">
-      {/* If word is valid, pass it to WordsGrid */}
-      <WordsGrid word={word} />
+      {showWinPopup && (
+        <WinPopup onClose={() => setShowWinPopup(false)} onRestart={handleRestart} />
+      )}
+      {word && <WordsGrid word={word} setShowWinPopup={setShowWinPopup} />}
     </div>
   );
 }
