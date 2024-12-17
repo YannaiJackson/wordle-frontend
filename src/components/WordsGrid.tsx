@@ -11,10 +11,6 @@ import { fetchValidation } from "@/components/API/ValidateGuess";
 import VirtualKeyboard from "@/components/VirtualKeyboard";
 import checkWin from "@/components/utils";
 
-// Define the expected structure of the colorsDict
-interface ColorsDict {
-  [key: string]: string[]; // key is the word, value is an array of colors
-}
 
 // Define props for WordsGrid component
 interface WordsGridProps {

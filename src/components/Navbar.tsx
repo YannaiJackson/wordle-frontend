@@ -3,18 +3,18 @@
  */
 
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import globe from "../../public/globe.svg";
 
 const Navbar = () => {
-  const [isEnglish, setIsEnglish] = useState(true); // Use boolean for state
+  // const [isEnglish, setIsEnglish] = useState(true); // Use boolean for state
 
   // Function to handle language change
-  const handleChangeLanguage = () => {
-    setIsEnglish(!isEnglish);
-    console.log(`Changed language to ${isEnglish ? 'HE' : 'EN'}`);
-  };
+  // const handleChangeLanguage = () => {
+  //   setIsEnglish(!isEnglish);
+  //   console.log(`Changed language to ${isEnglish ? 'HE' : 'EN'}`);
+  // };
 
   // Function to handle new game button click
   const handleNewGame = () => {

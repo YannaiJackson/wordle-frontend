@@ -3,7 +3,7 @@
  */
 
 'use client';
-import React, { useRef } from 'react';
+import React from 'react';
 
 // Define props for LetterBox component
 interface LetterBoxProps {
@@ -23,7 +23,6 @@ const LetterBox: React.FC<LetterBoxProps> = ({
   backgroundColor,
   letter,  // Destructure the letter prop
 }) => {
-  const localRef = useRef<HTMLInputElement>(null);
 
   // Function to handle key down events
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
