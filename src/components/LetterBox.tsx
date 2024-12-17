@@ -1,6 +1,11 @@
+/**
+ * This file contains the LetterBox component, which is responsible for rendering an individual letter box in the Wordle game.
+ */
+
 'use client';
 import React, { useState, useRef } from 'react';
 
+// Define props for LetterBox component
 interface LetterBoxProps {
   maxLength: number;
   onLetterChange: (letter: string) => void;
@@ -20,6 +25,7 @@ const LetterBox: React.FC<LetterBoxProps> = ({
 }) => {
   const localRef = useRef<HTMLInputElement>(null);
 
+  // Function to handle key down events
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Backspace') {
       console.log(`Backspace pressed in LetterBox`);
@@ -31,6 +37,7 @@ const LetterBox: React.FC<LetterBoxProps> = ({
     }
   };
 
+  // Render the LetterBox component
   return (
     <div
       className="w-16 h-16 flex justify-center items-center border-2 border-gray-400 rounded-md"

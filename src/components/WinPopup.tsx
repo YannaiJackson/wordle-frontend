@@ -1,9 +1,18 @@
+/**
+ * This file contains the WinPopup component, which is displayed when the player wins the game.
+ */
+
 import React from 'react';
 
+// Define the props for the WinPopup component
 interface WinPopupProps {
   onRestart: () => void; // Callback to restart the game
 }
 
+/**
+ * The WinPopup component, which is displayed when the player wins the game.
+ * @param onRestart - A callback function to restart the game.
+ */
 const WinPopup: React.FC<WinPopupProps> = ({ onRestart }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">

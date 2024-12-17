@@ -1,3 +1,8 @@
+/**
+ * This file contains the WordsGrid component, which is responsible for rendering the grid of letter boxes and handling user input.
+ * It also includes the logic for validating guesses, fetching color data, and checking for a win condition.
+ */
+
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import LetterBox from "@/components/LetterBox";
@@ -18,6 +23,7 @@ interface WordsGridProps {
 }
 
 const WordsGrid: React.FC<WordsGridProps> = ({ word, setShowWinPopup }) => {
+  // State variables
   const [guesses, setGuesses] = useState<string[][]>(
     Array(6).fill(Array(5).fill(""))
   );
@@ -29,14 +35,17 @@ const WordsGrid: React.FC<WordsGridProps> = ({ word, setShowWinPopup }) => {
     Array.from({ length: 6 }, () => Array(5).fill(null))
   );
 
+  // Effect hook to focus on the first letter box when the component mounts
   useEffect(() => {
     focusRefs.current[0][0]?.focus();
   }, []);
 
+  // Function to move focus to a specific letter box
   const moveFocus = (row: number, col: number) => {
     focusRefs.current[row]?.[col]?.focus();
   };
 
+  // Function to handle letter changes in the letter boxes
   const handleLetterChange = async (
     letter: string,
     rowIndex: number,
@@ -97,6 +106,7 @@ const WordsGrid: React.FC<WordsGridProps> = ({ word, setShowWinPopup }) => {
     }
   };
 
+  // Function to handle backspace key press in the letter boxes
   const handleBackspace = (rowIndex: number, colIndex: number) => {
     if (rowIndex < 0 || colIndex < 0) return;
 
@@ -114,6 +124,7 @@ const WordsGrid: React.FC<WordsGridProps> = ({ word, setShowWinPopup }) => {
     }
   };
 
+  // Render the WordsGrid component
   return (
     <div className="flex flex-col items-center justify-center h-full">
       <div className="flex flex-col gap-2">

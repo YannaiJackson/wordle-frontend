@@ -1,8 +1,14 @@
+/**
+ * This file contains the VirtualKeyboard component, which is responsible for rendering a virtual keyboard with letter keys.
+ * It also handles key press events and triggers the onKeyPress prop with the key pressed.
+ */
+
 'use client';
 import React, { FC } from 'react';
 
+// Define props for VirtualKeyboard component
 interface VirtualKeyboardProps {
-  onKeyPress?: (key: string) => void;
+  onKeyPress?: (key: string) => void; // Function to handle key press events
 }
 
 const VirtualKeyboard: FC<VirtualKeyboardProps> = ({ onKeyPress }) => {
@@ -12,11 +18,13 @@ const VirtualKeyboard: FC<VirtualKeyboardProps> = ({ onKeyPress }) => {
     ["Z", "X", "C", "V", "B", "N", "M", "⌫"],
   ];
 
+  // Function to handle key click events
   const handleKeyClick = (key: string) => {
     console.log(`Virtual keyboard key pressed: ${key}`);
     onKeyPress?.(key); // Trigger the onKeyPress prop with the key pressed
   };
 
+  // Render the VirtualKeyboard component
   return (
     <div className="py-0.03">
       {keys.map((row, rowIndex) => (
