@@ -11,21 +11,17 @@ import { fetchValidation } from "@/components/API/ValidateGuess";
 import VirtualKeyboard from "@/components/VirtualKeyboard";
 import checkWin from "@/components/utils";
 
-
 // Define props for WordsGrid component
 interface WordsGridProps {
   word: string; // word is passed as a prop
-  setShowWinPopup: (show: boolean) => void; // function to toggle win popup
+  onWin: () => void;
+  onLose: () => void;
 }
 
-const WordsGrid: React.FC<WordsGridProps> = ({ word, setShowWinPopup }) => {
+const WordsGrid: React.FC<WordsGridProps> = ({ word, onWin, onLose }) => {
   // State variables
-  const [guesses, setGuesses] = useState<string[][]>(
-    Array(6).fill(Array(5).fill(""))
-  );
-  const [colors, setColors] = useState<string[][]>(
-    Array(6).fill(Array(5).fill(""))
-  );
+  const [guesses, setGuesses] = useState<string[][]>(Array(6).fill(Array(5).fill("")));
+  const [colors, setColors] = useState<string[][]>(Array(6).fill(Array(5).fill("")));
   const [currentRow, setCurrentRow] = useState<number>(0);
   const focusRefs = useRef<(HTMLInputElement | null)[][]>(
     Array.from({ length: 6 }, () => Array(5).fill(null))
@@ -47,49 +43,34 @@ const WordsGrid: React.FC<WordsGridProps> = ({ word, setShowWinPopup }) => {
     rowIndex: number,
     colIndex: number
   ) => {
-    console.log(
-      `Letter added to position [${rowIndex}, ${colIndex}]`
-    );
-
     const newGuesses = guesses.map((row, rIndex) =>
       row.map((col, cIndex) =>
         rIndex === rowIndex && cIndex === colIndex ? letter : col
       )
     );
     setGuesses(newGuesses);
-    console.log("Updated grid:", newGuesses);
 
     if (colIndex === 4) {
       const completedRow = newGuesses[rowIndex].join("");
-      console.log(`Row completed: ${completedRow}`);
-
       try {
         const validationResult = await fetchValidation({ guess: completedRow });
-        if (!validationResult) {
-          console.log("Validation failed for guess:", completedRow);
-          return;
-        }
-        console.log("Validation successful for guess:", completedRow);
+        if (!validationResult) return;
 
-        setCurrentRow(rowIndex + 1);
-        focusRefs.current[rowIndex + 1]?.[0]?.focus();
-
-        const colorsDict = await fetchColors({
-          guess: completedRow,
-          word: word,
-        });
-        console.log(`checking guess: ${completedRow} against word: ${word}`);
+        const colorsDict = await fetchColors({ guess: completedRow, word });
         if (colorsDict && colorsDict[completedRow]) {
           const colorsArray = colorsDict[completedRow];
           const newColors = colors.map((row, rIndex) =>
             rIndex === rowIndex ? colorsArray : row
           );
           setColors(newColors);
-          console.log(`${completedRow} letter's colors are: ${colorsArray}`)
 
           if (checkWin(rowIndex, newColors)) {
-            setShowWinPopup(true);
-            console.log(`Player's guess was correct, plyer won.`);
+            onWin();
+            return;
+          }
+
+          if (rowIndex === 5 && !checkWin(rowIndex, newColors)) {
+            onLose();
             return;
           }
 

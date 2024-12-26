@@ -7,6 +7,9 @@ import React, { useState, useEffect } from 'react';
 import WordsGrid from "@/components/WordsGrid";
 import { fetchWord } from '@/components/API/GenerateWord';
 import WinPopup from "@/components/WinPopup";
+import LosePopup from "@/components/LosePopup";
+import LoadingScreen from "@/components/LoadingScreen";
+import ErrorScreen from "@/components/ErrorScreen";
 
 /**
  * The main page component for the Wordle game.
@@ -16,7 +19,7 @@ export default function Home() {
   const [word, setWord] = useState<string | null>(null);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [showWinPopup, setShowWinPopup] = useState(false);
+  const [gameStatus, setGameStatus] = useState<'win' | 'lose' | null>(null); // Tracks game end status
 
   // Function to fetch a new random word from the API
   const getNewWord = async () => {
@@ -34,8 +37,8 @@ export default function Home() {
       const uppercaseWord = fetchedWord.toUpperCase();
       console.log('Successfully fetched word:', uppercaseWord);
       setWord(uppercaseWord);
-    } catch (error) {
-      console.error('Error generating random word:', error);
+    } catch (err) {
+      console.error('Error generating random word:', err);
       setError(true);
     } finally {
       setLoading(false);
@@ -44,7 +47,7 @@ export default function Home() {
 
   // Function to handle game restarts
   const handleRestart = () => {
-    setShowWinPopup(false);
+    setGameStatus(null); // Reset game status
     console.log('Game restarting...');
     getNewWord(); // Restart game by fetching a new word
   };
@@ -55,34 +58,21 @@ export default function Home() {
     getNewWord();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen w-screen text-white text-5xl font-bold">
-        Loading...
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex flex-col justify-center items-center h-screen w-screen text-white text-2xl">
-        <p>An error occurred while generating a random word.</p>
-        <button
-          onClick={getNewWord}
-          className="mt-4 px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-        >
-          Try Again
-        </button>
-      </div>
-    );
-  }
+  // Conditional rendering for loading, error, or main game screen
+  if (loading) return <LoadingScreen />;
+  if (error) return <ErrorScreen onRetry={getNewWord} />;
 
   return (
     <div className="bg-gray-900 h-screen w-screen">
-      {showWinPopup && (
-        <WinPopup onRestart={handleRestart} />
+      {gameStatus === 'win' && <WinPopup onRestart={handleRestart} />}
+      {gameStatus === 'lose' && <LosePopup onRestart={handleRestart} correctWord={word || 'Error fetching word'} />}
+      {word && (
+        <WordsGrid
+          word={word}
+          onWin={() => setGameStatus('win')} // Set game status to 'win'
+          onLose={() => setGameStatus('lose')} // Set game status to 'lose'
+        />
       )}
-      {word && <WordsGrid word={word} setShowWinPopup={setShowWinPopup} />}
     </div>
   );
 }
