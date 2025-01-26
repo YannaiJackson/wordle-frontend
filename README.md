@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Wordle Frontend
 
-## Getting Started
+A web-based Wordle game built using **Next.js**, **React**, **TypeScript**, and **Tailwind CSS**, providing an interactive and fun word-guessing experience.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Interactive Wordle gameplay with dynamic UI.
+- Designed for desktop users.
+- Keyboard support for easy letter input.
+- Virtual keyboard option for enhanced accessibility.
+- Feedback for correct, misplaced, and incorrect letters.
+- Stateless game logic, with no server-side storage.
+
+## Technologies Used
+
+- **Next.js** - For building the server-side rendered application.
+- **React** - For building the user interface.
+- **TypeScript** - For type-safe development.
+- **Tailwind CSS** - For styling the application.
+- **React Hooks** - For managing state.
+
+## API Endpoints
+
+The application interacts with the following API endpoints:
+
+```typescript
+const config = {
+    API_BASE_URL: "http://0.0.0.0:8080/en",
+    URL_WORD_GENERATOR_ENDPOINT: "/random-word",
+    URL_WORD_VALIDATOR_ENDPOINT: "/validate-guess",
+    URL_WORD_CHECKER_ENDPOINT: "/check-guess-against-word",
+};
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Follow these steps to run the project locally:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/wordle-frontend.git
+   ```
 
-## Learn More
+2. Navigate to directory:
+   ```bash
+   cd wordle-frontend
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+5. Open the application in your browser at:
+   ```
+   http://localhost:3000
+   ```
 
-## Deploy on Vercel
+**Note: make sure you have an accesible instance of the API with its configured endpoints.**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## How to Play
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Guess the 5-letter word within 6 attempts.
+2. Each guess must be a valid word.
+3. Feedback colors:
+   - **Green**: Correct letter in the correct position.
+   - **Yellow**: Correct letter in the wrong position.
+   - **Gray**: Incorrect letter.
+
+## Contributing
+
+Contributions are welcome! Feel free to open issues and submit pull requests.
